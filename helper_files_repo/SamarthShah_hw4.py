@@ -95,6 +95,7 @@ def topUsers():
 #             f.write(json.dumps(status.text) + '\n')
 
 
+
 # UPDATED! 
 def get_timeline(user_name):
     MAX_ID = None
@@ -103,10 +104,9 @@ def get_timeline(user_name):
         bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
         for status in bunch_of_statuses:
             dick_status = status.__dict__
-            list_of_chefs.append(dick_status['_text'])  # change dick_status['_id'] to dick_status['_USERid'] if its there
+            list_of_chefs.append([dick_status['__user']['id'], dick_status['_text']])
             MAX_ID = dick_status['_id']
-        print list_of_chefs
-        print len(list_of_chefs)
+        print 'Number of tweets crawled', len(list_of_chefs)
 
 if __name__ == '__main__':
-    main()
+    get_timeline('grubstreet')
