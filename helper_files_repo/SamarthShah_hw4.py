@@ -9,60 +9,37 @@ myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
 
 
 def main():
-    rest_query_ex1()
-    rest_query_ex2()
-    rest_query_ex3()
+    restAPI_query()
     users = topUsers()  #top 10 users.
     for user in users:
         get_timeline(user)
 
 
-def rest_query_ex1():
-    query = '((assault OR fraud OR mugging OR rape OR molest OR vandalism)' \
-            'OR (mugger OR shoplifter OR smuggler OR thief OR vandal OR scam)' \
-            'OR (commit AND (crime OR battery)))'
-    geo = ('40.7127', '-74.0059', '15mi')  # City of New York
+def restAPI_query():
+    itemList = []
+    query = ''
+    with open('Items.txt', 'r') as r:
+        for items in r.readlines():
+            itemList = items.split(',')
+    for it in range(len(itemList)):
+        if it!=0:
+            query += ' OR ' + itemList[it].strip()
+        else:
+            query = itemList[it].strip()
+        # query += ' OR ' + '\"'+itemList[it]+'\"' if it != 0 else '\"'+itemList[it]+'\"'
+    print 'Query is: ', query
+
+    geo = ('40.7127', '-74.0059', '25mi')  # City of New York
     MAX_ID = None
-    for it in range(2):
+    for it in range(1):
         tweets = [json.loads(str(raw_tweet)) for raw_tweet
-                  in myApi.GetSearch(query, geo, count=200, max_id=MAX_ID, result_type='recent')]
+                  in myApi.GetSearch(query, geo, count=200, max_id=MAX_ID, result_type='mixed')]
         if tweets:
             MAX_ID = tweets[-1]['id']
-            print '# of tweets from Query-1: ', len(tweets)
+            print '# of tweets from this Query: ', len(tweets)
             for tweet in tweets:
                 countUser(tweet)
             storeOnFile(tweets)
-
-
-def rest_query_ex2():
-    query = '( ("robbery" OR "murder OR armed OR crime OR suspect) OR arrested)' \
-            ' AND ' \
-            '(manhattan OR (new AND york AND city) OR NYPD OR NYC OR cops OR police)'
-    geo = ('40.7127', '-74.0059', '20mi')  # City of New York
-    MAX_ID = None
-    for it in range(2):  # Retrieve up to 100 tweets
-        tweets = [json.loads(str(raw_tweet)) for raw_tweet
-                  in myApi.GetSearch(query, geo, count = 100, max_id = MAX_ID, result_type='mixed')]
-        if tweets:
-            MAX_ID = tweets[-1]['id']
-            print '# of tweets from Query-2: ', len(tweets)
-            for tweet in tweets:
-                countUser(tweet)
-        storeOnFile(tweets)
-
-
-def rest_query_ex3():
-    query = ' (burglary OR murderer OR robbery OR terrorist OR (charged AND with) ) ' \
-            'AND (manhattan OR (new AND york AND city) OR (new AND york) OR cops OR police OR NYPD)'
-
-    geo = ('40.7127', '-74.0059', '20mi')  # City of New York
-    tweets = [json.loads(str(raw_tweet)) for raw_tweet
-              in myApi.GetSearch(query, geo, count = 200, result_type='mixed')]
-    if tweets:
-        print '# of tweets from Query-3: ', len(tweets)
-        for tweet in tweets:
-            countUser(tweet)
-    storeOnFile(tweets)
 
 
 def storeOnFile(tweets):
@@ -88,15 +65,6 @@ def topUsers():
     return [sorted_users[i][0] for i in range(n)]
 
 
-# def get_timeline(user_name):
-#     statuses = myApi.GetUserTimeline(screen_name=user_name, count=200)
-#     with open('universe_samarth.txt', 'a') as f:
-#         for status in statuses:
-#             f.write(json.dumps(status.text) + '\n')
-
-
-
-# UPDATED! 
 def get_timeline(user_name):
     MAX_ID = None
     list_of_chefs = []
@@ -145,7 +113,8 @@ def get_textFile(user_name):
 
 
 if __name__ == '__main__':
-    get_textFile('grubstreet')
+    main()
+    # get_textFile('grubstreet')
     # get_timeline('MidtownLunch')
     # get_timeline('firstwefeast')
     # get_timeline('ruthreichl')
