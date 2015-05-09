@@ -98,13 +98,15 @@ def topUsers():
 # UPDATED! 
 def get_timeline(user_name):
     MAX_ID = None
+    list_of_chefs = []
     for it in range(2):
         bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
         for status in bunch_of_statuses:
             dick_status = status.__dict__
-            print dick_status['_text']
+            list_of_chefs.append(dick_status['_text'])  # change dick_status['_id'] to dick_status['_USERid'] if its there
             MAX_ID = dick_status['_id']
-
+        print list_of_chefs
+        print len(list_of_chefs)
 
 if __name__ == '__main__':
     main()
