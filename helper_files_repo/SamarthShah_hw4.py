@@ -100,13 +100,25 @@ def topUsers():
 def get_timeline(user_name):
     MAX_ID = None
     list_of_chefs = []
-    for it in range(2):
-        bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
-        for status in bunch_of_statuses:
-            dick_status = status.__dict__
-            list_of_chefs.append([dick_status['__user']['id'], dick_status['_text']])
-            MAX_ID = dick_status['_id']
-        print 'Number of tweets crawled', len(list_of_chefs)
+    with open('influential.txt', 'a') as w:
+        bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, count=200)
+        for userStatus in bunch_of_statuses:
+            userID = userStatus.__dict__['_user'].id
+            tweet = userStatus.__dict__['_text']
+            json_dict = {'id': userID, 'tweet': tweet, 'class': 0}
+            # MAX_ID = userStatus.__dict__['_id']
+            w.write(json.dumps(json_dict) + '\n')
+            # list_of_chefs.append([userID, tweet])
+    # print 'Number of tweets crawled', len(list_of_chefs)
+
 
 if __name__ == '__main__':
     get_timeline('grubstreet')
+    get_timeline('MidtownLunch')
+    get_timeline('firstwefeast')
+    get_timeline('ruthreichl')
+    get_timeline('EaterNY')
+    get_timeline('MelissaClark')
+    get_timeline('SplendidTable')
+    get_timeline('TheCooksCook')
+    get_timeline('infatuation')
