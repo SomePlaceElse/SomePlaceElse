@@ -88,11 +88,22 @@ def topUsers():
     return [sorted_users[i][0] for i in range(n)]
 
 
+# def get_timeline(user_name):
+#     statuses = myApi.GetUserTimeline(screen_name=user_name, count=200)
+#     with open('universe_samarth.txt', 'a') as f:
+#         for status in statuses:
+#             f.write(json.dumps(status.text) + '\n')
+
+
+# UPDATED! 
 def get_timeline(user_name):
-    statuses = myApi.GetUserTimeline(screen_name=user_name, count=200)
-    with open('universe_samarth.txt', 'a') as f:
-        for status in statuses:
-            f.write(json.dumps(status.text) + '\n')
+    MAX_ID = None
+    for it in range(2):
+        bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
+        for status in bunch_of_statuses:
+            dick_status = status.__dict__
+            print dick_status['_text']
+            MAX_ID = dick_status['_id']
 
 
 if __name__ == '__main__':
