@@ -130,8 +130,22 @@ def get_timeline(user_name):
     # print 'Number of tweets crawled', len(list_of_chefs)
 
 
+def get_textFile(user_name):
+    MAX_ID = None
+    list_of_chefs = []
+    with open('influential_plaintext.txt', 'a') as w:
+        bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, count=10)
+        for userStatus in bunch_of_statuses:
+            userID = userStatus.__dict__['_user'].id
+            tweet = userStatus.__dict__['_text']
+            # MAX_ID = userStatus.__dict__['_id']
+            w.write(json.dumps(tweet) + '\n')
+            # list_of_chefs.append([userID, tweet])
+    # print 'Number of tweets crawled', len(list_of_chefs)
+
+
 if __name__ == '__main__':
-    get_timeline('grubstreet')
+    get_textFile('grubstreet')
     # get_timeline('MidtownLunch')
     # get_timeline('firstwefeast')
     # get_timeline('ruthreichl')
