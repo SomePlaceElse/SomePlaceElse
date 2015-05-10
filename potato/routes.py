@@ -7,16 +7,41 @@ app = Flask(__name__)
 # Keeps Flask from swallowing error messages
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
-app.config.from_pyfile('analyzeapp.cfg')
+#app.config.from_pyfile('potato.cfg')
 
-@app.route("/")
+@app.route('/')
 def index():
     return render_template('index.html')
 
-@app.route("/about")
+@app.route("/rec/", methods=['GET','POST'])
+def recommend():
+    error = None
+    if request.method == 'POST':
+        tid = request.form['twitterid']
+        if valid_id(tid):
+            return redirect(url_for('get_potato'))
+        else:
+            error = 'Invalid ID'
+    return render_template('rec.html', error=error)
+
+@app.route('/rec/result', methods=['POST'])
+def get_potato(tid=None):
+    tid = request.form['twitterid']
+    app.logger.warning('tid recieved: %s' % tid)
+    return render_template('result.html', tid=tid)
+
+@app.route('/about')
 def about():
     return render_template('about.html')
 
+@app.errorhandler(404)
+def not_found(error):
+    return render_template('error.html'), 404
+
+def valid_id(twitterid):
+    return True
+
+"""
 @app.route('/testjson', methods=['POST'])
 def test():
     if request.method == 'POST':
@@ -52,5 +77,8 @@ def todos():
             todos=Todo.query.order_by(Todo.pub_date.desc()).all()
             )
 
-    if __name__ == "__main__":
-        app.run()
+"""
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    <p clas="text-center"> <h2> Some Place Else </h2> </p>
+    {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
+    <form action="{{ url_for('get_potato') }}" method=post>
+        <dl class="dl-horizontal">
+            <dt>Twitter ID</dt>
+            <dd> <input type="text" class="form-control" name="twitterid" placeholder="Twitter ID" > </dd>
+            <br />
+            <dd>
+            <input class="btn btn-default" type="submit" value="Submit">
+            </dd>
+        </dl>
+    </form>
+</div>
+{% endblock %}
