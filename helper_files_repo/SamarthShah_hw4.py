@@ -16,24 +16,31 @@ def main():
 
 
 def restAPI_query():
-    itemList = []
+    itemList, queryList = [], []
     query = ''
     with open('Items.txt', 'r') as r:
         for items in r.readlines():
             itemList = items.split(',')
-    for it in range(len(itemList)):
-        if it!=0:
-            query += ' OR ' + itemList[it].strip()
+    for idx in range(len(itemList)):
+        if (idx==0):
+            query = itemList[idx].strip()
         else:
-            query = itemList[it].strip()
-        # query += ' OR ' + '\"'+itemList[it]+'\"' if it != 0 else '\"'+itemList[it]+'\"'
-    print 'Query is: ', query
-
+            if (idx % 43 == 0):
+                queryList.append(query)
+                query = ''
+            else :
+                if (idx % 43 == 1):
+                    query = itemList[idx].strip()
+                else:
+                    query += ' OR ' + itemList[idx].strip()
+    queryList.append(query)
     geo = ('40.7127', '-74.0059', '25mi')  # City of New York
+    query2 = 'Meat OR chicken OR beef OR pork OR ham OR burger OR hamburger OR pizza OR egg OR omlette OR "french toast" OR turkey OR shrimp OR lobster OR fish OR crabs OR oyster OR sausage OR salami OR soup OR cereal OR broccoli OR "maple syrup" OR pancake OR "apple pie" OR bread OR bagel OR bacon OR potatoes OR sub OR sandwich OR steak OR "hot dog" OR pie OR pasta OR salad OR "peanut butter" OR rice OR coffee OR cheese OR porridge OR pudding OR cake'
+    print len(query2.split(' OR '))
     MAX_ID = None
-    for it in range(1):
+    for idx in range(len(queryList)):
         tweets = [json.loads(str(raw_tweet)) for raw_tweet
-                  in myApi.GetSearch(query, geo, count=200, max_id=MAX_ID, result_type='mixed')]
+                  in myApi.GetSearch(queryList[idx], geo, count=200, max_id=MAX_ID, result_type='mixed')]
         if tweets:
             MAX_ID = tweets[-1]['id']
             print '# of tweets from this Query: ', len(tweets)
