@@ -93,18 +93,19 @@ def createItemSet(user_name):
     with open('Items.txt', 'r') as r:
         for items in r.readlines():
             itemList = items.split(',')
-    print itemList
     with open('Users/'+user_name+'.txt', 'r') as r:
         for line in r.readlines():
             for word in line.strip().split():
                 for i in range(len(itemList)):
                     if itemList[i] in word:
                         words_by_user.append(itemList[i])
-    print words_by_user
+    item_set.append(set(words_by_user))
 
 
 if __name__ == '__main__':
     main()
+    for item in item_set:
+        print item
     # get_textFile('grubstreet')
     # get_timeline('MidtownLunch')
     # get_timeline('firstwefeast')
