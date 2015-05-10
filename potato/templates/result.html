@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="container">
+    {% if potato %}
+    <h1>  Your Twitter ID: <strong> {{ potato.tid }}  </strong> <small> This is a random graph</small> </h1>
+        <iframe src="{{ potato.unique_url }}" style="width: 90%; height: 550px"></iframe>
+
+        <div>
+    <a href="https://plot.ly/~Dreamshot/212/" target="_blank" title="Public Transport Use in North America" style="display: block; text-align: center;"><img src="https://plot.ly/~Dreamshot/212.png" alt="Public Transport Use in North America" style="max-width: 100%;width: 750px;"  width="750" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+    <script data-plotly="Dreamshot:212" src="https://plot.ly/embed.js" async></script>
+</div>
+    {% else %}
+        <h1> Potato not found </h1>
+    {% endif %}
+</div>
+{% endblock %}
