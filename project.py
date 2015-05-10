@@ -2,6 +2,9 @@ import twitter
 import json
 
 user_count = {}  # A dictionary of {"username" : # of tweets by that username}
+item_set, queryList = [], []
+
+
 myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
                   consumer_secret='SxuOj26fmlq3Buh7UuGGs9TDEc1JlVVA0S63gaKl4AM4uvzSAd',
                   access_token_key='54665279-J9uu0N20FXEInUokgTrTCeyzXDJ1bghd0lgL8zwgE',
@@ -10,14 +13,14 @@ myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
 
 def main():
     restAPI_query()
-    users = topUsers()  #top 10 users.
+    users = topUsers()  #top 20 users.
     for user in users:
         get_timeline(user)
+        createItemSet(user)
 
-
-def restAPI_query():
-    itemList, queryList = [], []
+def populateQueryList():
     query = ''
+    itemList = []
     with open('Items.txt', 'r') as r:
         for items in r.readlines():
             itemList = items.split(',')
@@ -34,6 +37,9 @@ def restAPI_query():
                 else:
                     query += ' OR ' + itemList[idx].strip()
     queryList.append(query)
+
+def restAPI_query():
+    populateQueryList()
     geo = ('40.7127', '-74.0059', '25mi')  # City of New York
     MAX_ID = None
     for idx in range(len(queryList)):
@@ -62,7 +68,7 @@ def countUser(tweet):
 
 
 def topUsers():
-    n = 10  # top 10 users
+    n = 20  # top 20 users
     sorted_users = sorted(user_count.items(), key=lambda (k, v) : v, reverse=True)  #Sort based on Values
     for i in range(n):  # prints Top 10 influential users
         print '# of tweets-per-username'
@@ -73,13 +79,29 @@ def topUsers():
 def get_timeline(user_name):
     MAX_ID = None
     list_of_chefs = []
-    with open('influential.txt', 'a') as w:
+    with open('Users/'+user_name+'.txt', 'w') as w:
         for itr in range(2):
             bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
             for userStatus in bunch_of_statuses:
                 tweet = userStatus.__dict__['_text']
                 MAX_ID = userStatus.__dict__['_id']
                 w.write(json.dumps(tweet) + '\n')
+
+
+def createItemSet(user_name):
+    words_by_user, itemList = [], []
+    with open('Items.txt', 'r') as r:
+        for items in r.readlines():
+            itemList = items.split(',')
+    print itemList
+    with open('Users/'+user_name+'.txt', 'r') as r:
+        for line in r.readlines():
+            for word in line.strip().split():
+                for i in range(len(itemList)):
+                    print 'word: %s list: %s' % (word, itemList[i].strip())
+                    if word == itemList[i]:
+                        words_by_user.append(word)
+    print words_by_user
 
 
 if __name__ == '__main__':
