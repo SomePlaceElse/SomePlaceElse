@@ -2,7 +2,15 @@ import twitter
 import json
 
 user_count = {}  # A dictionary of {"username" : # of tweets by that username}
-item_set, queryList = [], []
+'''
+    item_set = Keeps record of the itemSet generated so far, in the end, dumps it into data.bucket
+    queryList = List of all the Queries disjoint by 550-some characters.
+'''
+item_set, queryList, input_user_item = [], [], []
+
+INPUT_USERNAME = 'testspe'
+def setINPUT_USERNAME(user_name):
+    INPUT_USERNAME = user_name
 
 
 myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
@@ -17,6 +25,10 @@ def main():
     for user in users:
         get_timeline(user)
         createItemSet(user)
+    '''
+        This is the part where the input taken from user will be set to method.
+    '''
+    inputUserItemSet(INPUT_USERNAME)
 
 def populateQueryList():
     query = ''
@@ -38,11 +50,13 @@ def populateQueryList():
                     query += ' OR ' + itemList[idx].strip()
     queryList.append(query)
 
+
 def restAPI_query():
     populateQueryList()
     geo = ('40.7127', '-74.0059', '25mi')  # City of New York
     MAX_ID = None
     for idx in range(len(queryList)):
+        print 'Querying twitter. Query = {}'.format(queryList[idx])
         tweets = [json.loads(str(raw_tweet)) for raw_tweet
                   in myApi.GetSearch(queryList[idx], geo, count=200, max_id=MAX_ID, result_type='mixed')]
         if tweets:
@@ -53,8 +67,8 @@ def restAPI_query():
             storeOnFile(tweets)
 
 
-def storeOnFile(tweets):
-    with open("output.txt", 'a') as writer:
+def storeOnFile(tweets):        # Saves all the tweets crawled by Query
+    with open("tweets_crawled_by_query.txt", 'a') as writer:
         for tweet in tweets:
             writer.write(json.dumps(tweet['text'])+'\n\n')
 
@@ -69,18 +83,19 @@ def countUser(tweet):
 
 def topUsers():
     n = 20  # top 20 users
+    print 'Calculating top',n,'Users!!!!'
     sorted_users = sorted(user_count.items(), key=lambda (k, v) : v, reverse=True)  #Sort based on Values
-    for i in range(n):  # prints Top 10 influential users
-        print '# of tweets-per-username'
-        print sorted_users[i][1], sorted_users[i][0]
+    # for i in range(n):  # prints Top n influential users
+    #     print '# of tweets-per-username'
+    #     print sorted_users[i][1], sorted_users[i][0]
     return [sorted_users[i][0] for i in range(n)]
 
 
 def get_timeline(user_name):
+    print 'Crawling timeline of',user_name
     MAX_ID = None
-    list_of_chefs = []
     with open('Users/'+user_name+'.txt', 'w') as w:
-        for itr in range(2):
+        for itr in range(2):    # 400 tweets per user
             bunch_of_statuses = myApi.GetUserTimeline(screen_name=user_name, max_id=MAX_ID, count=200)
             for userStatus in bunch_of_statuses:
                 tweet = userStatus.__dict__['_text']
@@ -89,6 +104,11 @@ def get_timeline(user_name):
 
 
 def createItemSet(user_name):
+    print 'Creating ItemSet for',user_name
+    '''
+    itemList = ALL the items from our Query
+    words_by_user = ALL the words in the itemList that the user wrote in their tweets.
+    '''
     words_by_user, itemList = [], []
     with open('Items.txt', 'r') as r:
         for items in r.readlines():
@@ -99,30 +119,24 @@ def createItemSet(user_name):
                 for i in range(len(itemList)):
                     if itemList[i] in word:
                         words_by_user.append(itemList[i])
-    inter = list(set(words_by_user))
-    item_set.append(inter)
-    with open('orange/data.basket', 'w') as w:
-        for item in item_set:
+    print 'Appending these words by user {} : {} to the itemSet'.format(user_name, words_by_user)
+    item_set.append(list(set(words_by_user)))       # Removes duplicates and appends it to our itemSet.
+
+
+def inputUserItemSet(user_name):
+    get_timeline(user_name)                         # Will create a file Users/user_name.txt
+    createItemSet(user_name)
+    with open('orange/data.basket', 'w') as w:      # Writes it into data.basket
+        for idx, item in enumerate(item_set):
             result = ''
-            for idx, iii in enumerate(item):
-                if idx != len(item)-1:
+            for idx, iii in enumerate(item):        # iii = items in ItemSet
+                if idx < len(item)-1:
                     result += iii + ','
                 else:
                     result += iii
-            w.write(result + '\n')
+            w.write(result + '\n' if (idx < len(item_set)-1) else result)
+    print 'Dumped the itemset in to data.basket'
 
 
 if __name__ == '__main__':
     main()
-    for item in item_set:
-        print item
-    # get_textFile('grubstreet')
-    # get_timeline('MidtownLunch')
-    # get_timeline('firstwefeast')
-    # get_timeline('ruthreichl')
-    # get_timeline('EaterNY')
-    # get_timeline('MelissaClark')
-    # get_timeline('SplendidTable')
-    # get_timeline('TheCooksCook')
-    # get_timeline('infatuation')
-    # get_timeline('CookingChannel')
