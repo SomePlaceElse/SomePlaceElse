@@ -99,7 +99,10 @@ def createItemSet(user_name):
                 for i in range(len(itemList)):
                     if itemList[i] in word:
                         words_by_user.append(itemList[i])
-    item_set.append(set(words_by_user))
+    inter = list(set(words_by_user))
+    item_set.append(inter)
+    with open('orange/itemSet.txt', 'w') as w:
+        w.write(json.dumps(item_set))
 
 
 if __name__ == '__main__':

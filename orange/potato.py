@@ -6,6 +6,10 @@
 import Orange
 
 
+with open('itemSet.txt'):
+    print 'cds'
+
+
 raw_data = ["Burger, Pizza, Tandoori Chicken",
         "Pizza, noodles, Tacos",
         "Burger, Pasta", 
