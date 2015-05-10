@@ -25,9 +25,9 @@ data_instance = data[len(data)-1]   # The last item in the bucket is the one of 
 print 'User data',data_instance
 for rule in rules:
     if rule.applies_left(data_instance) and not rule.applies_right(data_instance):
-        print 'For ',rule.left
-        print 'For ',type(rule.left)
-        print 'Recommended item ',rule.right
+        print 'Rule',rule
+        print 'Left[1] ',rule.left
+        print 'Right[1] ',rule.right
 
         # print "%4.1f %4.1f  %s" % (rule.support, rule.confidence, rule)
 
