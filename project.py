@@ -101,8 +101,15 @@ def createItemSet(user_name):
                         words_by_user.append(itemList[i])
     inter = list(set(words_by_user))
     item_set.append(inter)
-    with open('orange/itemSet.txt', 'w') as w:
-        w.write(json.dumps(item_set))
+    with open('orange/data.basket', 'w') as w:
+        for item in item_set:
+            result = ''
+            for idx, iii in enumerate(item):
+                if idx != len(item)-1:
+                    result += iii + ','
+                else:
+                    result += iii
+            w.write(result + '\n')
 
 
 if __name__ == '__main__':
