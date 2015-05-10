@@ -31,24 +31,38 @@ def main():
     inputUserItemSet(INPUT_USERNAME)
 
 def populateQueryList():
-    query = ''
-    itemList = []
-    with open('Items.txt', 'r') as r:
-        for items in r.readlines():
-            itemList = items.split(',')
-    for idx in range(len(itemList)):
-        if not idx:     # idx = 0
-            query = itemList[idx].strip()
-        else:
-            if not idx % 43:    # if idx is a multiple of 43
-                queryList.append(query)
-                query = ''
-            else :
-                if idx % 43 == 1:
-                    query = itemList[idx].strip()
-                else:
-                    query += ' OR ' + itemList[idx].strip()
-    queryList.append(query)
+    query1 = 'meat OR chicken OR beef OR pork OR ham OR burger OR hamburger OR pizza OR egg OR omelet OR turkey OR shrimp OR lobster OR crabs OR oyster OR sausage OR salami OR "turkey sausage" OR pancake OR "apple pie" OR kebab OR kabab OR bacon OR sandwich OR steak OR dumplings OR "fish n chips" OR "hot dog" OR pasta OR salad OR rice OR pudding'
+    query2 = 'cake OR corn OR cookie OR flatbread OR doughnut OR stew OR noodles OR "smoked fish" OR wrap OR roll OR "buffalo wings" OR "roasted salmon" OR baklava OR schezwan OR "pepperoni sausage" OR "pepperoni pizza" OR "chicken biryani" OR "crumb pie" OR cheesecake OR "dim sum" OR barbecue OR pita OR "mashed potato" OR cheeseburger'
+    query3 = '"chicken wings" OR nachos OR curry OR tandoori OR sizzler OR lasagna OR tofu OR spaghetti OR ravioli OR burrito OR tacos OR "black beans" OR sushi OR quesadilla OR falafel OR shawarma OR tortillas OR meatball OR poutine OR "BBQ chicken" OR "BBQ lamb" OR "chicken teriyaki" OR "chicken nuggets" OR cannelloni OR "fried rice" OR biryani'
+    query4 = '"schezwan fried rice" OR "schezwan rice" OR "shrimp rice" OR "lemon rice" OR "fish curry" OR "shrimp curry" OR "roasted lamb" OR "lamb biryani" OR "shrimp biryani" OR "indian bread" OR "garlic naan" OR "chicken curry" OR "lamb curry" OR "curry rice" OR "hot pot" OR "caesar salad" OR "stir fried" OR brigadeiro OR bossam OR "rice casserole"'
+    queryList.append(query1)
+    queryList.append(query2)
+    queryList.append(query3)
+    queryList.append(query4)
+    # query = ''
+    # itemList = []
+    # with open('Items.txt', 'r') as r:
+    #     for items in r.readlines():
+    #         itemList = items.split(',')
+    # for idx in range(len(itemList)):
+    #     print 'Index',idx
+    #     if not idx:     # idx = 0
+    #         print 'Index = 0'
+    #         query = itemList[idx].strip()
+    #     else:
+    #         print 'Index is non-zero'
+    #         if not idx % 43:    # if idx is a multiple of 43
+    #             print 'Index is a multiple of 43'
+    #             queryList.append(query)
+    #             query = ''
+    #         else :
+    #             if idx % 43 == 1:
+    #                 print 'Index is one later than idxmod43'
+    #                 query = itemList[idx].strip()
+    #             else:
+    #                 print 'Index is nonzero and not mod43'
+    #                 query += ' OR ' + itemList[idx].strip()
+    # queryList.append(query)
 
 
 def restAPI_query():
@@ -56,6 +70,7 @@ def restAPI_query():
     geo = ('40.7127', '-74.0059', '25mi')  # City of New York
     MAX_ID = None
     for idx in range(len(queryList)):
+        print 'Length ',len(queryList[idx])
         print 'Querying twitter. Query = {}'.format(queryList[idx])
         tweets = [json.loads(str(raw_tweet)) for raw_tweet
                   in myApi.GetSearch(queryList[idx], geo, count=200, max_id=MAX_ID, result_type='mixed')]
@@ -119,7 +134,7 @@ def createItemSet(user_name):
                 for i in range(len(itemList)):
                     if itemList[i] in word:
                         words_by_user.append(itemList[i])
-    print 'Appending these words by user {} : {} to the itemSet'.format(user_name, words_by_user)
+    # print 'Appending these words by user {} : {} to the itemSet'.format(user_name, words_by_user)
     item_set.append(list(set(words_by_user)))       # Removes duplicates and appends it to our itemSet.
 
 
