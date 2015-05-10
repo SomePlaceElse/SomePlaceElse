@@ -3,6 +3,7 @@ __pycache__/
 *.py[cod]
 *.xml
 *.iml
+/.idea
 # C extensions
 *.so
 
