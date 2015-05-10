@@ -1,7 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="container">
-    <p>   test {{ twitterid }}  </p>
-    <h1>  {{ twitterid }}  </h1>
+    {% if potato %}
+    <h1>  Your Twitter ID: <strong> {{ potato.tid }}  </strong> <small> This is a random graph</small> </h1>
+        <iframe src="{{ potato.unique_url }}" style="width: 90%; height: 550px"></iframe>
+    {% else %}
+        <h1> Potato not found </h1>
+    {% endif %}
 </div>
 {% endblock %}

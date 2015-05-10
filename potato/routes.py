@@ -1,5 +1,6 @@
 import logging
 import json
+from potato import Potato
 from datetime import datetime
 from flask import Flask, request, flash, url_for, redirect, render_template, abort
 
@@ -28,7 +29,10 @@ def recommend():
 def get_potato(tid=None):
     tid = request.form['twitterid']
     app.logger.warning('tid recieved: %s' % tid)
-    return render_template('result.html', tid=tid)
+    user_potato = Potato(tid)
+    user_potato.get_test_plot()
+    #app.logger.warning('Got embedeble graph url: %s' % user_potato.unique_url)
+    return render_template('result.html', potato=user_potato)
 
 @app.route('/about')
 def about():
@@ -40,6 +44,14 @@ def not_found(error):
 
 def valid_id(twitterid):
     return True
+
+def potato(twitterid):
+    return None
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
 
 """
 @app.route('/testjson', methods=['POST'])
@@ -80,5 +92,3 @@ def todos():
 """
 
 
-if __name__ == "__main__":
-    app.run(debug=True)

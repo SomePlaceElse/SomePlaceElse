@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
 <div class="container">
-    <p clas="text-center"> <h2> Some Place Else </h2> </p>
+    <p clas="text-center"> <h2> Welcome to Potato Recommender </h2> </p>
     {% if error %}<div class="error"><strong>Error:</strong> {{ error }}</div>{% endif %}
     <form action="{{ url_for('get_potato') }}" method=post>
         <dl class="dl-horizontal">
