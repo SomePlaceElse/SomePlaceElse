@@ -98,9 +98,8 @@ def createItemSet(user_name):
         for line in r.readlines():
             for word in line.strip().split():
                 for i in range(len(itemList)):
-                    print 'word: %s list: %s' % (word, itemList[i].strip())
-                    if word == itemList[i]:
-                        words_by_user.append(word)
+                    if itemList[i] in word:
+                        words_by_user.append(itemList[i])
     print words_by_user
 
 
