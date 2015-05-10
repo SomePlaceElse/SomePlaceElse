@@ -1,5 +1,8 @@
 import Orange, json
+from Orange.testing.unit.tests.test_table import native
+
 SUPPORT = 0.4
+ranked_recommendations = {}
 # Load data from the text file: data.basket
 data = Orange.data.Table("data.basket")
 
@@ -25,9 +28,13 @@ data_instance = data[len(data)-1]   # The last item in the bucket is the one of 
 print 'User data',data_instance
 for rule in rules:
     if rule.applies_left(data_instance) and not rule.applies_right(data_instance):
-        print 'Rule',rule
-        print 'Left[1] ',rule.left
-        print 'Right[1] ',rule.right
+        rec_list = rule.right.get_metas(str).keys()
+        for item in rec_list:
+            if ranked_recommendations.has_key(item):
+                ranked_recommendations[item] += 1
+            else:
+                ranked_recommendations[item] = 1
+print ranked_recommendations
 
         # print "%4.1f %4.1f  %s" % (rule.support, rule.confidence, rule)
 
