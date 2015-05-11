@@ -227,6 +227,7 @@ class Project:
 
 
     def populateRestaurantList(self):
-        with open('Files/restaurants_list.txt', 'r') as r:
-            for line in r.readlines():
-                self.restaurantList = json.loads(line)
+        self.restaurantList = {'abc':1, 'bcd':2}
+        # with open('Files/restaurants_list.txt', 'r') as r:
+        #     for line in r.readlines():
+        #         self.restaurantList = json.loads(line)
