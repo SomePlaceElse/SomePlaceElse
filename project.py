@@ -1,4 +1,3 @@
-__author__ = 'samarthshah'
 import twitter, json, Orange
 
 
@@ -8,10 +7,10 @@ class Project:
         item_set = Keeps record of the itemSet generated so far, in the end, dumps it into data.bucket
         queryList = List of all the Queries disjoint by 550-some characters.
     '''
-    item_set, append_item_set, queryList, input_user_item = [], [], [], []
+    item_set, append_item_set, queryList, restaurantList, input_user_item = [], [], [], [], []
     INPUT_USERNAME = ''
     topK, SUPPORT = 0, 0.0
-    ranked_recommendations = {}
+    ranked_recommendations, ranked_restaurants = {}, {}
     geo = ('40.7127', '-74.0059', '25mi')  # City of New York
 
     myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
@@ -34,6 +33,8 @@ class Project:
         self.inputUserItemSet(self.INPUT_USERNAME)
         self.getRecommendation()
         self.getRestaurants()
+        for k in self.ranked_restaurants.keys():
+            print k
 
 
     def shoot_lazy(self):
@@ -98,7 +99,7 @@ class Project:
 
 
     def storeOnFile(self, tweets):
-        with open("Files/tweets_crawled_by_query.txt", 'w') as writer:
+        with open("Files/tweets_crawled_by_query.txt", 'a') as writer:
             for tweet in tweets:
                 writer.write(json.dumps(tweet['text'])+'\n')
 
@@ -155,7 +156,6 @@ class Project:
 
     def dumpToBasket(self, type):
         if type == 'eager':
-            print 'eager'
             with open('Basket/data.basket', 'w') as w:      # Writes it into data.basket
                 for idx, item in enumerate(self.item_set):
                     result = ''
@@ -165,7 +165,6 @@ class Project:
             print 'Dumped the itemset in to data.basket'
 
         else:     #   Lazy
-            print 'lazy'
             with open('Basket/data.basket', 'a') as a:      # Appends it into data.basket
                 for idx, item in enumerate(self.append_item_set):
                     result = ''
@@ -197,10 +196,10 @@ class Project:
         queryItemList = []
         for k in self.ranked_recommendations.keys():
             queryItemList.append(k)
-        query = ' OR '.join(queryItemList)
+        query = ' OR '.join(queryItemList)      # concoct a query magically
         print 'Query =', query
         MAX_ID = None
-        for idx in range(2):
+        for idx in range(3):        # Get about 600 tweets using that query
             tweets = [json.loads(str(raw_tweet)) for raw_tweet
                       in self.myApi.GetSearch(query, self.geo, count=200, max_id=MAX_ID, result_type='mixed')]
             if tweets:
@@ -209,6 +208,25 @@ class Project:
                 for tweet in tweets:
                     self.countUser(tweet)
                 self.storeOnFile(tweets)
-        with open('Files/tweets_crawled_by_query.txt', 'r') as r:
+        self.populateRestaurantList()
+        self.rankRestaurants()
 
-            pass
+
+    def rankRestaurants(self):
+        with open('Files/tweets_crawled_by_query.txt', 'r') as r:
+            for line in r.readlines():                          # Go through every tweet
+                for idx in range(len(self.restaurantList)):
+                    restaurant_name = self.restaurantList[idx]
+                    if restaurant_name in line:                 # If it is present in the line
+                        print restaurant_name
+                        if self.ranked_restaurants.has_key(restaurant_name):
+                            self.ranked_restaurants[restaurant_name] += 1
+                        else:
+                            self.ranked_restaurants[restaurant_name] = 1
+
+
+    def populateRestaurantList(self):
+        with open('Files/restaurants_list.txt', 'r') as r:
+            for line in r.readlines():
+                self.restaurantList = json.loads(line)
+                print 'Res list = ',self.restaurantList
