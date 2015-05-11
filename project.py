@@ -11,7 +11,7 @@ class Project:
     INPUT_USERNAME = ''
     topK, SUPPORT = 0, 0.0
     ranked_recommendations, ranked_restaurants = {}, {}
-    geo = ('40.7127', '-74.0059', '25mi')  # City of New York
+    geo = ('40.7127', '-74.0059', '25mi')       # City of New York
 
     myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
                   consumer_secret='SxuOj26fmlq3Buh7UuGGs9TDEc1JlVVA0S63gaKl4AM4uvzSAd',
@@ -23,6 +23,8 @@ class Project:
         self.topK = topK
         self.SUPPORT = SUPPORT
 
+        self.rules = None
+
 
     def shoot_eager(self):
         self.restAPI_query()
@@ -33,8 +35,8 @@ class Project:
         self.inputUserItemSet(self.INPUT_USERNAME)
         self.getRecommendation()
         self.getRestaurants()
-        for k in self.ranked_restaurants.keys():
-            print k
+        for k, v in self.ranked_restaurants.items():
+            print k, v
 
 
     def shoot_lazy(self):
@@ -55,7 +57,6 @@ class Project:
                     for i in range(len(itemList)):
                         if itemList[i] in word:
                             words_by_user.append(itemList[i])
-        # print 'Appending these words by user {} : {} to the itemSet'.format(user_name, words_by_user)
         self.append_item_set.append(list(set(words_by_user)))
         self.dumpToBasket('lazy')
         self.getRecommendation()
@@ -177,12 +178,12 @@ class Project:
     def getRecommendation(self):
         data = Orange.data.Table("Basket/data.basket")     #  Load data from the text file: data.basket
         data_instance = data[len(data)-1]   # The last item in the bucket is the one of userinput!
-        rules = Orange.associate.AssociationRulesSparseInducer(data, support=self.SUPPORT)
+        self.rules = Orange.associate.AssociationRulesSparseInducer(data, support=self.SUPPORT)
         with open('Files/number_of_rules.txt', 'a') as a:
-            a.write(json.dumps((self.SUPPORT, len(rules))) + ',')       # Records the support and number of rules created
+            a.write(json.dumps((self.SUPPORT, len(self.rules))) + ',')       # Records the support and number of rules created
         print 'Finding recommendations for', self.INPUT_USERNAME,'...'
         print 'User data',data_instance
-        for rule in rules:
+        for rule in self.rules:
             if rule.applies_left(data_instance) and not rule.applies_right(data_instance):
                 rec_list = rule.right.get_metas(str).keys()
                 for item in rec_list:
@@ -229,4 +230,3 @@ class Project:
         with open('Files/restaurants_list.txt', 'r') as r:
             for line in r.readlines():
                 self.restaurantList = json.loads(line)
-                print 'Res list = ',self.restaurantList
