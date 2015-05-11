@@ -4,6 +4,7 @@ __pycache__/
 *.xml
 *.iml
 .idea/
+Users/
 # C extensions
 *.so
 
