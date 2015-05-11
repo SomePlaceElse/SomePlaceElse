@@ -2,16 +2,28 @@
 {% block body %}
 <div class="container">
     {% if potato %}
-    <h1>  Your Twitter ID: <strong> {{ potato.tid }}  </strong> <small> This is a random graph</small> </h1>
-<!--         <iframe src="{{ potato.unique_url }}" style="width: 90%; height: 550px"></iframe> -->
-
-<div>
-    <a href="https://plot.ly/~phoochka/23/" target="_blank" title="" style="display: block; text-align: center;"><img src="https://plot.ly/~phoochka/23.png" alt="" style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
-    <script data-plotly="phoochka:23" src="https://plot.ly/embed.js" async></script>
+    <h2>  Your Twitter ID: <strong> {{ potato.tid }}  </strong> </h2>
+    {#    <iframe src="{{ potato.embed_url }}" style="width: 90%; height: 550px"></iframe> #}
+    <div>
+    <ul>
+    {% for food in potato.top %}
+    <li> <h4> You are recommended to have <strong> {{food}} </strong> </h4> </li>
+    {% endfor %}
+    </ul>
+    <p>
+    At resturants: 
+    </p>
+    </div>
+    <div class="panel panel-default">
+  <div class="panel-body">
+    <a href="https://plot.ly/~phoochka/81/" target="_blank" title="" style="display: block; text-align: center; witdh:75%;"><img src="https://plot.ly/~phoochka/81.png" alt="" style="max-width: 100%;"  onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+    <script data-plotly="phoochka:81" src="https://plot.ly/embed.js" async></script>
 </div>
-
+  </div>
+</div>
+    
     {% else %}
-        <h1> Potato not found </h1>
+    <h1> Go eat POTATO!! </h1>
     {% endif %}
 </div>
 {% endblock %}

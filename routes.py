@@ -29,8 +29,8 @@ def recommend():
 def get_potato(tid=None):
     tid = request.form['twitterid']
     app.logger.warning('tid recieved: %s' % tid)
-    user_potato = Potato(tid)
-    user_potato.get_test_plot()
+    user_potato = Potato()
+    user_potato.get_result(tid)
     #app.logger.warning('Got embedeble graph url: %s' % user_potato.unique_url)
     return render_template('result.html', potato=user_potato)
 
