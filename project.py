@@ -19,7 +19,7 @@ class Project:
                   access_token_key='54665279-J9uu0N20FXEInUokgTrTCeyzXDJ1bghd0lgL8zwgE',
                   access_token_secret='pQwwdcgUvLe6n2jguoU9mwNKCs9use6IXOoQ2YNVxHxuM')
 
-    def __init__(self, user_name, topK=20, SUPPORT=0.4):
+    def __init__(self, user_name, topK=20, SUPPORT=0.3):
         self.INPUT_USERNAME = user_name
         self.topK = topK
         self.SUPPORT = SUPPORT
@@ -45,7 +45,7 @@ class Project:
         words_by_user = ALL the words in the itemList that the user wrote in their tweets.
         '''
         words_by_user, itemList = [], []
-        with open('Items.txt', 'r') as r:
+        with open('Files/Items.txt', 'r') as r:
             for items in r.readlines():
                 itemList = items.split(',')
         with open('Users/'+user_name+'.txt', 'r') as r:
@@ -98,7 +98,7 @@ class Project:
 
 
     def storeOnFile(self, tweets):
-        with open("tweets_crawled_by_query.txt", 'a') as writer:
+        with open("Files/tweets_crawled_by_query.txt", 'w') as writer:
             for tweet in tweets:
                 writer.write(json.dumps(tweet['text'])+'\n')
 
@@ -134,7 +134,7 @@ class Project:
         words_by_user = ALL the words in the itemList that the user wrote in their tweets.
         '''
         words_by_user, itemList = [], []
-        with open('Items.txt', 'r') as r:
+        with open('Files/Items.txt', 'r') as r:
             for items in r.readlines():
                 itemList = items.split(',')
         with open('Users/'+user_name+'.txt', 'r') as r:
@@ -155,21 +155,23 @@ class Project:
 
     def dumpToBasket(self, type):
         if type == 'eager':
+            print 'eager'
             with open('Basket/data.basket', 'w') as w:      # Writes it into data.basket
                 for idx, item in enumerate(self.item_set):
                     result = ''
                     for idx, iii in enumerate(item):        # iii = items in ItemSet
                         result += (iii + ',') if (idx < len(item)-1) else iii
-                    w.write(result + '\n' if (idx < len(self.item_set)-1) else result)
+                    w.write(result + '\n')
             print 'Dumped the itemset in to data.basket'
 
         else:     #   Lazy
+            print 'lazy'
             with open('Basket/data.basket', 'a') as a:      # Appends it into data.basket
                 for idx, item in enumerate(self.append_item_set):
                     result = ''
                     for idx, iii in enumerate(item):        # iii = items in ItemSet
                         result += (iii + ',') if (idx < len(item)-1) else iii
-                    a.write(result)
+                    a.write(result + '\n')
             print 'Appended the itemset to data.basket'
 
 
@@ -177,7 +179,7 @@ class Project:
         data = Orange.data.Table("Basket/data.basket")     #  Load data from the text file: data.basket
         data_instance = data[len(data)-1]   # The last item in the bucket is the one of userinput!
         rules = Orange.associate.AssociationRulesSparseInducer(data, support=self.SUPPORT)
-        with open('number_of_rules.txt', 'a') as a:
+        with open('Files/number_of_rules.txt', 'a') as a:
             a.write(json.dumps((self.SUPPORT, len(rules))) + ',')       # Records the support and number of rules created
         print 'Finding recommendations for', self.INPUT_USERNAME,'...'
         print 'User data',data_instance
@@ -207,3 +209,6 @@ class Project:
                 for tweet in tweets:
                     self.countUser(tweet)
                 self.storeOnFile(tweets)
+        with open('Files/tweets_crawled_by_query.txt', 'r') as r:
+
+            pass
