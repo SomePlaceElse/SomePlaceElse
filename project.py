@@ -1,5 +1,8 @@
 import twitter, json, Orange
 
+import sys;
+reload(sys);
+sys.setdefaultencoding("utf8")
 
 class Project:
     user_count = {}  # A dictionary of {"username" : # of tweets by that username}
@@ -35,8 +38,9 @@ class Project:
         self.inputUserItemSet(self.INPUT_USERNAME)
         self.getRecommendation()
         self.getRestaurants()
-        for k, v in self.ranked_restaurants.items():
-            print k, v
+        manual_rank = sorted(self.ranked_restaurants.items(), key=lambda (k,v):v, reverse=True)
+        for k, v in manual_rank:
+            print k,v
 
 
     def shoot_lazy(self):
@@ -61,13 +65,16 @@ class Project:
         self.dumpToBasket('lazy')
         self.getRecommendation()
         self.getRestaurants()
+        manual_rank = sorted(self.ranked_restaurants.items(), key=lambda (k,v):v, reverse=True)
+        for k, v in manual_rank:
+            print k,v
 
 
     def populateQueryList(self):
-        query1 = 'meat OR chicken OR beef OR pork OR ham OR burger OR hamburger OR pizza OR egg OR omelet OR turkey OR ' \
-                 'shrimp OR lobster OR crabs OR oyster OR sausage OR salami OR "turkey sausage" OR pancake OR "apple pie" ' \
-                 'OR kebab OR kabab OR bacon OR sandwich OR steak OR dumplings OR "fish n chips" OR "hot dog" OR pasta ' \
-                 'OR salad OR rice OR pudding'
+        query1 = 'meat OR chicken OR beef OR pork OR ham OR burger OR hamburger OR pizza OR “spanish omelet” OR turkey OR ' \ 
+                'shrimp OR lobster OR crabs OR oyster OR sausage OR salami OR pepperoni OR pancake OR "apple pie" ' \ 
+                'OR kebab OR kabab OR bacon OR sandwich OR steak OR dumplings OR "hot dog" OR pasta ' \ 
+                'OR pudding OR ’'
         query2 = 'cake OR corn OR cookie OR flatbread OR doughnut OR stew OR noodles OR "smoked fish" OR wrap OR ' \
                  'roll OR "buffalo wings" OR "roasted salmon" OR baklava OR schezwan OR "pepperoni sausage" OR "pepperoni ' \
                  'pizza" OR "chicken biryani" OR "crumb pie" OR cheesecake OR "dim sum" OR barbecue OR pita OR "mashed potato"' \
@@ -83,6 +90,9 @@ class Project:
         self.queryList.append(query2)
         self.queryList.append(query3)
         self.queryList.append(query4)
+        with open('Files/queries.txt', 'r') as r:
+            for line in r.readlines():
+                self.queryList.append(line)
 
 
     def restAPI_query(self):
@@ -219,7 +229,6 @@ class Project:
                 for idx in range(len(self.restaurantList)):
                     restaurant_name = self.restaurantList[idx]
                     if restaurant_name in line:                 # If it is present in the line
-                        print restaurant_name
                         if self.ranked_restaurants.has_key(restaurant_name):
                             self.ranked_restaurants[restaurant_name] += 1
                         else:
@@ -227,7 +236,7 @@ class Project:
 
 
     def populateRestaurantList(self):
-        self.restaurantList = ['abc','def']
-        # with open('Files/restaurants_list.txt', 'r') as r:
-        #     for line in r.readlines():
-        #         self.restaurantList = json.loads(line)
+        # self.restaurantList = ['abc','def']
+        with open('Files/restaurants_list.txt', 'r') as r:
+            for line in r.readlines():
+                self.restaurantList = json.loads(line)
