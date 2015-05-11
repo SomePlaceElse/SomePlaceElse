@@ -12,6 +12,8 @@ class Project:
     INPUT_USERNAME = ''
     topK, SUPPORT = 0, 0.0
     ranked_recommendations = {}
+    geo = ('40.7127', '-74.0059', '25mi')  # City of New York
+
     myApi=twitter.Api(consumer_key='y4kyDOkiaOEF0VRBhBo2O4E2j',
                   consumer_secret='SxuOj26fmlq3Buh7UuGGs9TDEc1JlVVA0S63gaKl4AM4uvzSAd',
                   access_token_key='54665279-J9uu0N20FXEInUokgTrTCeyzXDJ1bghd0lgL8zwgE',
@@ -31,6 +33,7 @@ class Project:
             self.createItemSet(user)
         self.inputUserItemSet(self.INPUT_USERNAME)
         self.getRecommendation()
+        self.getRestaurants()
 
 
     def shoot_lazy(self):
@@ -55,6 +58,7 @@ class Project:
         self.append_item_set.append(list(set(words_by_user)))
         self.dumpToBasket('lazy')
         self.getRecommendation()
+        self.getRestaurants()
 
 
     def populateQueryList(self):
@@ -81,25 +85,22 @@ class Project:
 
     def restAPI_query(self):
         self.populateQueryList()
-        geo = ('40.7127', '-74.0059', '25mi')  # City of New York
         MAX_ID = None
         for idx in range(len(self.queryList)):
-            print 'Length ',len(self.queryList[idx])
-            print 'Querying twitter. Query = {}'.format(self.queryList[idx])
+            print 'Query = {}'.format(self.queryList[idx])
             tweets = [json.loads(str(raw_tweet)) for raw_tweet
-                      in self.myApi.GetSearch(self.queryList[idx], geo, count=200, max_id=MAX_ID, result_type='mixed')]
+                      in self.myApi.GetSearch(self.queryList[idx], self.geo, count=200, max_id=MAX_ID, result_type='mixed')]
             if tweets:
                 MAX_ID = tweets[-1]['id']
                 print '# of tweets from this Query: ', len(tweets)
                 for tweet in tweets:
                     self.countUser(tweet)
-                # self.storeOnFile(tweets)
 
 
     def storeOnFile(self, tweets):
-        with open("tweets_crawled_by_query.txt", 'w') as writer:
+        with open("tweets_crawled_by_query.txt", 'a') as writer:
             for tweet in tweets:
-                writer.write(json.dumps(tweet['text'])+'\n\n')
+                writer.write(json.dumps(tweet['text'])+'\n')
 
 
     def countUser(self, tweet):
@@ -162,7 +163,7 @@ class Project:
                     w.write(result + '\n' if (idx < len(self.item_set)-1) else result)
             print 'Dumped the itemset in to data.basket'
 
-        else:                           #   Lazy
+        else:     #   Lazy
             with open('Basket/data.basket', 'a') as a:      # Appends it into data.basket
                 for idx, item in enumerate(self.append_item_set):
                     result = ''
@@ -191,4 +192,18 @@ class Project:
 
 
     def getRestaurants(self):
-        pass
+        queryItemList = []
+        for k in self.ranked_recommendations.keys():
+            queryItemList.append(k)
+        query = ' OR '.join(queryItemList)
+        print 'Query =', query
+        MAX_ID = None
+        for idx in range(2):
+            tweets = [json.loads(str(raw_tweet)) for raw_tweet
+                      in self.myApi.GetSearch(query, self.geo, count=200, max_id=MAX_ID, result_type='mixed')]
+            if tweets:
+                MAX_ID = tweets[-1]['id']
+                print '# of tweets from this Query: ', len(tweets)
+                for tweet in tweets:
+                    self.countUser(tweet)
+                self.storeOnFile(tweets)
