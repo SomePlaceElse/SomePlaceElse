@@ -1,13 +1,15 @@
 __author__ = 'samarthshah'
 from project import Project
 import json
-# ok_now = Project('testspe')
-# ok_now.shoot_lazy()
+ok_now = Project('testspe')
+ok_now.shoot_lazy()
 #
 
-foodList=[]
-with open('Food/american.txt', 'r') as r:
-    pass
+# foodList=[]
+# with open('Food/american.txt', 'r') as r:
+#     for line in r.readlines():
+#         foodList = line.split(' and ')
+#
 
 # restaurantList = []
 # with open('Files/restaurants_list.txt', 'r') as r:
