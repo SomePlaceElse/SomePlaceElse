@@ -1,8 +1,8 @@
 __author__ = 'samarthshah'
 from project import Project
 import json
-ok_now = Project('testspe', support=0.4)
-ok_now.shoot_lazy()
+ok_now = Project('karnav2014', support=0.3)
+ok_now.shoot_eager()
 
 
 # restaurantList = []

@@ -1,8 +1,9 @@
 import twitter, json, Orange
 
-import sys;
-reload(sys);
+import sys
+reload(sys)
 sys.setdefaultencoding("utf8")
+
 
 class Project:
     user_count = {}  # A dictionary of {"username" : # of tweets by that username}
@@ -100,9 +101,6 @@ class Project:
                 print '# of tweets from this Query: ', len(tweets)
                 for tweet in tweets:
                     self.countUser(tweet)
-                with open("Files/tweetsbyfitems.txt", 'a') as writer:
-                    for tweet in tweets:
-                        writer.write(json.dumps(tweet['text'])+'\n')
 
 
     def storeOnFile(self, tweets):
@@ -189,6 +187,9 @@ class Project:
             a.write(json.dumps((self.SUPPORT, len(self.rules))) + ',')       # Records the support and number of rules created
         print 'Finding recommendations for', self.INPUT_USERNAME,'...'
         print 'User data',data_instance
+        print "%s" % ("Rule")
+        for r in self.rules:
+            print r
         for rule in self.rules:
             if rule.applies_left(data_instance) and not rule.applies_right(data_instance):
                 rec_list = rule.right.get_metas(str).keys()
@@ -197,6 +198,7 @@ class Project:
                         self.ranked_recommendations[item] += 1
                     else:
                         self.ranked_recommendations[item] = 1
+        print self.ranked_recommendations
 
 
     def getRestaurants(self):
@@ -229,6 +231,7 @@ class Project:
                             self.ranked_restaurants[restaurant_name] += 1
                         else:
                             self.ranked_restaurants[restaurant_name] = 1
+        print self.ranked_restaurants
 
 
     def populateRestaurantList(self):
